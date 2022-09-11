@@ -20,7 +20,7 @@ CORS(app)
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 !! Running this funciton will add one
 '''
-db_drop_and_create_all()
+#db_drop_and_create_all()
 
 # ROUTES
 '''
@@ -167,7 +167,7 @@ def unprocessable(error):
 '''
 
 @app.errorhandler(401)
-def unprocessable(error):
+def unautorized(error):
     return jsonify({
         "success": False,
         "error": 401,
@@ -175,7 +175,7 @@ def unprocessable(error):
     }), 401
 
 @app.errorhandler(403)
-def unprocessable(error):
+def forbidden(error):
     return jsonify({
         "success": False,
         "error": 403,
@@ -185,7 +185,7 @@ def unprocessable(error):
 
 
 @app.errorhandler(405)
-def unprocessable(error):
+def allowing(error):
     return jsonify({
         "success": False,
         "error": 405,
@@ -193,7 +193,7 @@ def unprocessable(error):
     }), 405
 
 @app.errorhandler(500)
-def unprocessable(error):
+def internalerrors(error):
     return jsonify({
         "success": False,
         "error": 500,
@@ -207,11 +207,11 @@ def unprocessable(error):
     error handler should conform to general task above
 '''
 @app.errorhandler(404)
-def unprocessable(error):
+def error_404(error):
     return jsonify({
         "success": False,
         "error": 404,
-        "message": "not found"
+        "message": "resource not found"
     }), 404
 
 
@@ -222,8 +222,7 @@ def unprocessable(error):
     error handler should conform to general task above
 '''
 @app.errorhandler(AuthError)
-def auth_error(erreur):
-    print(erreur)
+def authentify_error(erreur):
     return jsonify({
         "success": False,
         "error": erreur.status_code,
