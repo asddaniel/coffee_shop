@@ -1,6 +1,5 @@
 #from crypt import methods
 import os
-from types import NoneType
 from flask import Flask, request, jsonify, abort
 from sqlalchemy import exc
 import json
@@ -107,11 +106,11 @@ def post_drinks(data=""):
 '''
 @app.route('/drinks/<id>', methods=['PATCH'])
 @requires_auth('patch:drinks')
-def modify_drinks(id):
+def modify_drinks(payload, id):
     title = request.get_json()["title"]
-    recipe = request.get_json()['recipe']
+    recipe = json.dumps(request.get_json()['recipe'])
     drink = Drink.query.filter_by(id=id).first()
-    if type(drink)==NoneType : 
+    if not drink: 
         return jsonify({"response":"not found"})
     drink.title = title
     drink.recipe = recipe
@@ -130,16 +129,21 @@ def modify_drinks(id):
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks/<int:id>', methods=['DELETE'])
-@requires_auth("delete:drinks")
-def delete_drinks(id):
-    
-    drink = Drink.query.filter_by(id=id).first()
-    if type(drink)==NoneType : 
+@requires_auth('delete:drinks')
+def delete_drinks(payload, id):
+    data = str(request).split('/')
+    identifiant = int(data[len(data)-1].split(' ')[0].replace("'", ""))
+    print(data)
+    try:
+      
+        drink = Drink.query.filter_by(id=identifiant).first()
+        print(drink)
+        drink.delete()
+        return jsonify({"success":True, "delete":id})
+    except:
         return jsonify({"response":"not found"})
     
-    drink.delete()
-    return jsonify({"success":True, "delete":id})
-
+  
 # Error Handling
 '''
 Example error handling for unprocessable entity
